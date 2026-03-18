@@ -1,79 +1,47 @@
-let currentLocation = 1;
-let numOfPapers = 3;
-let maxLocation = numOfPapers + 1;
+let currentPage = 1;
+const totalPages = 3;
+const book = document.getElementById('book');
+const scene = document.getElementById('scene');
+const envelope = document.getElementById('envelope');
 
-const prevBtn = document.querySelector("#prev-btn");
-const nextBtn = document.querySelector("#next-btn");
-const book = document.querySelector("#book");
-
-const p1 = document.querySelector("#p1");
-const p2 = document.querySelector("#p2");
-const p3 = document.querySelector("#p3");
-
-// 翻页逻辑修正
-function openBook() {
-    book.style.transform = "translateX(50%)";
-}
-
-function closeBook(isAtBeginning) {
-    if(isAtBeginning) {
-        book.style.transform = "translateX(0%)";
-    } else {
-        book.style.transform = "translateX(100%)";
+// 翻页逻辑
+function updatePages(direction) {
+    if (direction === 'next' && currentPage <= totalPages) {
+        const page = document.getElementById(`p${currentPage}`);
+        page.classList.add('flipped');
+        // 翻过去后，减小它的基础 Z 轴，防止遮挡
+        page.style.zIndex = currentPage;
+        currentPage++;
+    } else if (direction === 'prev' && currentPage > 1) {
+        currentPage--;
+        const page = document.getElementById(`p${currentPage}`);
+        page.classList.remove('flipped');
+        page.style.zIndex = totalPages - currentPage;
     }
 }
 
-function goNextPage() {
-    if(currentLocation < maxLocation) {
-        switch(currentLocation) {
-            case 1:
-                openBook();
-                p1.classList.add("flipped");
-                p1.style.zIndex = 1;
-                break;
-            case 2:
-                p2.classList.add("flipped");
-                p2.style.zIndex = 2;
-                break;
-            case 3:
-                p3.classList.add("flipped");
-                p3.style.zIndex = 3;
-                break;
-        }
-        currentLocation++;
-    }
-}
+// 按钮监听
+document.getElementById('nextBtn').addEventListener('click', () => updatePages('next'));
+document.getElementById('prevBtn').addEventListener('click', () => updatePages('prev'));
 
-function goPrevPage() {
-    if(currentLocation > 1) {
-        switch(currentLocation) {
-            case 2:
-                closeBook(true);
-                p1.classList.remove("flipped");
-                p1.style.zIndex = 3;
-                break;
-            case 3:
-                p2.classList.remove("flipped");
-                p2.style.zIndex = 2;
-                break;
-            case 4:
-                p3.classList.remove("flipped");
-                p3.style.zIndex = 1;
-                break;
-        }
-        currentLocation--;
-    }
-}
+// 信封点击交互
+envelope.addEventListener('click', (e) => {
+    e.stopPropagation(); // 防止触发翻页
+    envelope.classList.toggle('open');
+});
 
-// 按钮事件
-nextBtn.addEventListener("click", goNextPage);
-prevBtn.addEventListener("click", goPrevPage);
+// 鼠标 3D 随动效果
+document.addEventListener('mousemove', (e) => {
+    const x = (window.innerWidth / 2 - e.pageX) / 30;
+    const y = (window.innerHeight / 2 - e.pageY) / 30;
+    scene.style.transform = `rotateX(${10 + y}deg) rotateY(${-10 - x}deg)`;
+});
 
-// 信封显示控制
-function showEnvelope() {
-    document.getElementById('overlay').style.display = 'flex';
-}
-
-function hideEnvelope() {
-    document.getElementById('overlay').style.display = 'none';
-}
+// 触摸支持
+let touchStartX = 0;
+document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+document.addEventListener('touchend', e => {
+    const touchEndX = e.changedTouches[0].clientX;
+    if (touchStartX - touchEndX > 50) updatePages('next');
+    if (touchEndX - touchStartX > 50) updatePages('prev');
+});
