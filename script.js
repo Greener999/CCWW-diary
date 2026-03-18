@@ -1,8 +1,8 @@
 let currentPage = 1;
 const totalPages = 3;
 
-// 初始化页面堆叠顺序
-function init() {
+// 初始化堆叠层级
+function initPages() {
     const pages = document.querySelectorAll('.page');
     pages.forEach((page, index) => {
         page.style.zIndex = totalPages - index;
@@ -14,10 +14,10 @@ function updatePages(direction) {
         const page = document.getElementById(`p${currentPage}`);
         page.classList.add('flipped');
         
-        // 在翻页动画中段（700ms）切换层级，确保不遮挡
+        // 关键修复：利用setTimeout在中段切换层级，杜绝视觉卡顿
         setTimeout(() => {
             page.style.zIndex = currentPage;
-        }, 700);
+        }, 650); // 1.3s翻页时间的中点
         
         currentPage++;
     } else if (direction === 'prev' && currentPage > 1) {
@@ -27,11 +27,11 @@ function updatePages(direction) {
         
         setTimeout(() => {
             page.style.zIndex = totalPages - currentPage + 1;
-        }, 700);
+        }, 650);
     }
 }
 
-// 绑定按钮
+// 事件监听
 document.getElementById('nextBtn').onclick = () => updatePages('next');
 document.getElementById('prevBtn').onclick = () => updatePages('prev');
 
@@ -40,19 +40,17 @@ document.getElementById('p1').onclick = (e) => {
     if (currentPage === 1) updatePages('next');
 };
 
-// 信封点击交互
 const envelope = document.getElementById('envelope');
 envelope.onclick = (e) => {
-    e.stopPropagation(); // 阻止冒泡到页面点击事件
+    e.stopPropagation(); // 阻止冒泡到页面点击翻页
     envelope.classList.toggle('open');
 };
 
-// 鼠标视角随动效果
+// 视角随动 3D 效果
 document.addEventListener('mousemove', (e) => {
     const x = (window.innerWidth / 2 - e.pageX) / 45;
     const y = (window.innerHeight / 2 - e.pageY) / 45;
     document.getElementById('scene').style.transform = `rotateX(${10 + y}deg) rotateY(${-5 - x}deg)`;
 });
 
-// 初始化执行
-init();
+initPages();
