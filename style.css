@@ -2,8 +2,8 @@
     --bg-color: #faf3e0;
     --brown: #5d4037;
     --paper: #fdf5e6;
-    --env-color: #d2b48c;
-    --flap-color: #bc8f8f;
+    --cp-green: #005a3c; /* 邮政绿备用，当前使用复古色 */
+    --env-base: #e0d5c1;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,94 +17,93 @@ body {
     font-family: 'Ma Shan Zheng', cursive;
 }
 
-.scene {
-    width: 400px; height: 550px;
-    transform-style: preserve-3d;
-}
-
+.scene { width: 420px; height: 580px; transform-style: preserve-3d; }
 .book { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
 
 .page {
     position: absolute; width: 100%; height: 100%;
     transform-origin: left center;
     transform-style: preserve-3d;
-    transition: transform 1.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: transform 1.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
 .page-front, .page-back {
     position: absolute; width: 100%; height: 100%;
-    /* 核心修复：隐藏背面，防止跳变 */
-    backface-visibility: hidden; 
-    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
     padding: 40px;
-    box-shadow: inset 5px 0 20px rgba(0,0,0,0.05), 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: inset 5px 0 20px rgba(0,0,0,0.05), 2px 0 8px rgba(0,0,0,0.1);
     background: var(--paper);
-    border: 1px solid rgba(0,0,0,0.05);
+    border: 1px solid rgba(0,0,0,0.1);
 }
 
-.page-back { transform: rotateY(180deg); background: #f3e5c8; }
-.paper-empty { background: #f3e5c8 !important; } /* 封面反面空白 */
+.page-back { transform: rotateY(180deg); background: #f4ead5; }
+.paper-empty { background: #f4ead5 !important; }
 
-/* 信封与斜放 */
+.cover-front, .cover-back {
+    background: var(--brown) !important;
+    color: var(--paper) !important;
+    border-radius: 0 10px 10px 0;
+    text-align: center; display: flex; flex-direction: column; justify-content: center;
+}
+
+/* --- 中国邮政信封样式 --- */
 .envelope-area {
-    position: relative; width: 100%; height: 220px;
-    margin-top: 40px; transform-style: preserve-3d;
+    position: relative; width: 100%; height: 260px;
+    margin-top: 60px; transform-style: preserve-3d;
 }
 
 .envelope-wrapper {
-    width: 290px; height: 170px;
+    width: 320px; height: 200px;
     margin: 0 auto;
-    transform: rotateZ(-5deg) rotateX(5deg); 
+    transform: rotateZ(-3deg) rotateX(5deg);
     transform-style: preserve-3d;
     transition: 0.6s ease;
 }
 
-.envelope-body {
-    width: 100%; height: 100%;
-    background: var(--env-color);
-    position: relative; transform-style: preserve-3d;
-}
+.envelope-body { width: 100%; height: 100%; background: var(--env-base); position: relative; transform-style: preserve-3d; }
 
 .flap {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--flap-color);
-    clip-path: polygon(0 0, 100% 0, 50% 55%);
-    transform-origin: top;
-    transition: transform 0.6s ease;
-    z-index: 4;
+    background: #cbbba0;
+    clip-path: polygon(0 0, 100% 0, 50% 50%);
+    transform-origin: top; z-index: 4; transition: 0.8s;
 }
 
-.envelope-front-layer {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-    background: var(--env-color);
-    clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
-    z-index: 3;
+/* 邮政风详情 */
+.cp-style {
+    padding: 15px; border: 2px solid #a38d72;
+    clip-path: polygon(0 35%, 100% 35%, 100% 100%, 0 100%);
+}
+
+.post-code-top { display: flex; gap: 4px; margin-bottom: 10px; }
+.post-code-top span {
+    width: 18px; height: 24px; border: 1px solid #b22222; 
+    color: #b22222; font-size: 14px; text-align: center; line-height: 24px;
+}
+
+.address-line-to { border-bottom: 1px solid #a38d72; margin: 10px 0; font-size: 14px; padding-bottom: 5px; }
+.name-to { font-size: 18px; padding-left: 40px; margin: 15px 0; }
+.stamp-box {
+    position: absolute; top: 15px; right: 15px;
+    width: 45px; height: 55px; border: 2px dashed #b22222;
+    font-size: 10px; color: #b22222; text-align: center; padding-top: 15px;
 }
 
 .letter {
     position: absolute; top: 5%; left: 5%; width: 90%; height: 90%;
-    background: #fff; padding: 20px;
-    transform: translateZ(1px);
-    transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 2;
-    opacity: 0;
+    background: #fff; padding: 20px; transform: translateZ(1px);
+    z-index: 2; opacity: 0; transition: 0.8s;
 }
 
-/* 交互：仅在滑出后显示文字 */
-.letter-content {
-    opacity: 0;
-    transition: opacity 0.4s ease;
-}
+.letter-content { opacity: 0; transition: 0.4s; }
 
-.envelope-wrapper.step1 .flap { transform: rotateX(165deg); }
+/* 交互状态 */
+.envelope-wrapper.step1 .flap { transform: rotateX(170deg); }
 .envelope-wrapper.step1 .letter { opacity: 1; transform: translateZ(1px) translateY(-10px); }
 
-.envelope-wrapper.step2 .letter {
-    transform: translateY(-150px) translateZ(50px) rotateZ(2deg);
-    height: 300px;
-}
+.envelope-wrapper.step2 .letter { transform: translateY(-160px) translateZ(60px); height: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 .envelope-wrapper.step2 .letter-content { opacity: 1; transition-delay: 0.3s; }
 
-/* 控件 */
-.controls { position: fixed; bottom: 30px; display: flex; gap: 20px; z-index: 1000; }
-button { padding: 10px 25px; background: var(--brown); color: white; border: none; cursor: pointer; border-radius: 20px; }
+.controls { position: fixed; bottom: 30px; display: flex; gap: 20px; z-index: 9999; }
+button { padding: 12px 28px; background: var(--brown); color: white; border: none; border-radius: 25px; cursor: pointer; }
+.hint { text-align: center; margin-top: 20px; color: #8d6e63; font-size: 0.9rem; }
