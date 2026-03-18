@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温馨日记本 - 家的记忆</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-brown: #8d6e63;
+            --warm-yellow: #fdf5e6; /* 枇杷果肉色 */
+            --leaf-green: #81c784;
+            --paper-color: #f7edd4;
+            --wood-texture: #5d4037;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #faf3e0;
+            /* 背景纹理：模拟淡淡的枇杷树叶感 */
+            background-image: radial-gradient(#eaddca 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            perspective: 2000px;
+            font-family: 'Ma Shan Zheng', cursive, serif;
+        }
+
+        /* --- 3D 容器 --- */
+        .scene {
+            width: 400px;
+            height: 500px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        /* --- 日记本主体 --- */
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: grab;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left center;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            transform-style: preserve-3d;
+            user-select: none;
+        }
+
+        /* 封面与封底 */
+        .cover {
+            background: var(--wood-texture);
+            color: var(--warm-yellow);
+            border-radius: 5px 15px 15px 5px;
+            box-shadow: inset -5px 0 10px rgba(0,0,0,0.5), 5px 5px 15px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .cover-title { font-size: 2.5rem; border: 2px solid var(--warm-yellow); padding: 20px; }
+
+        /* 内页通用样式 */
+        .page-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: var(--paper-color);
+            padding: 40px;
+            border: 1px solid #dcd0b9;
+            box-shadow: inset 30px 0 50px rgba(0,0,0,0.05);
+            line-height: 1.8;
+            font-size: 1.2rem;
+            color: #4e342e;
+            overflow: hidden;
+        }
+
+        /* 背面内容（翻过去后看到的） */
+        .page-back {
+            transform: rotateY(-180deg);
+            background: #f0e6cc;
+        }
+
+        /* 已翻过的状态 */
+        .page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* --- 信封样式 --- */
+        .envelope-container {
+            display: none; /* 初始隐藏 */
+            width: 320px;
+            height: 220px;
+            background: #d7ccc8;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(10deg);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: all 0.5s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0; width: 0; height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #a1887f;
+            transform-origin: top;
+            transition: transform 0.4s 0.2s;
+            z-index: 5;
+        }
+
+        .letter {
+            position: absolute;
+            bottom: 5px; left: 10px;
+            width: 300px; height: 200px;
+            background: white;
+            padding: 20px;
+            transition: transform 0.5s;
+            z-index: 2;
+            font-size: 1rem;
+        }
+
+        /* 信封打开后的动画 */
+        .envelope-container.open .envelope-flap { transform: rotateX(180deg); z-index: 1; }
+        .envelope-container.open .letter { transform: translateY(-120px) rotate(-2deg); z-index: 10; height: 350px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* 邮戳样式 */
+        .postmark {
+            position: absolute;
+            right: 20px; top: 20px;
+            width: 60px; height: 60px;
+            border: 2px solid #8d6e63;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            opacity: 0.6;
+            transform: rotate(15deg);
+        }
+
+        /* 控制按钮 */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            display: flex;
+            gap: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background: var(--primary-brown);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+
+<div class="scene" id="scene">
+    <div class="book" id="book">
+        
+        <div class="page cover" onclick="flipPage(0)">
+            <div class="page-content">
+                <div class="cover-title">我们的日记</div>
+                <p style="margin-top: 20px;">[点击开启温馨时光]</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="page-content">
+                <h3>2026年3月18日 晴</h3>
+                <p>[此处替换为你的日记内容第一段：今天阳光洒进窗户，枇杷树的影子投在书桌上...]</p>
+            </div>
+            <div class="page-back">
+                <p>[此处替换为你的日记内容第二段：那些微小的瞬间，汇聚成家的温暖。]</p>
+            </div>
+        </div>
+
+        <div class="page">
+            <div class="page-content">
+                <p>[此处替换为你的日记内容第三段：记得那天我们一起在院子里采摘枇杷，果实满枝...]</p>
+            </div>
+            <div class="page-back" id="last-page-back">
+                <p style="text-align: center; margin-top: 100px;">这是最后的秘密...</p>
+                <p style="text-align: center;">[点击翻页查看信封]</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="envelope-container" id="envelope" onclick="openEnvelope()">
+    <div class="envelope-flap"></div>
+    <div class="letter">
+        <p>亲爱的 [收件人名字]:</p>
+        <p style="text-indent: 2em; margin-top: 10px;">[此处替换为信件正文：这是一封跨越时光的信，谢谢你一直以来的陪伴...]</p>
+        <p style="text-align: right; margin-top: 20px;">—— [你的名字]</p>
+    </div>
+    <div class="postmark">2026.03.18<br>幸福路</div>
+    <div style="position: absolute; bottom: 20px; left: 20px; font-size: 0.8rem;">
+        收：[收件人地址占位符]
+    </div>
+</div>
+
+<div class="controls">
+    <button onclick="prevPage()">上一页</button>
+    <button onclick="nextPage()">下一页</button>
+</div>
+
+<script>
+    let currentPage = 0;
+    const pages = document.querySelectorAll('.page');
+    const book = document.getElementById('book');
+    const envelope = document.getElementById('envelope');
+    const scene = document.getElementById('scene');
+
+    // 初始化层级
+    pages.forEach((page, index) => {
+        page.style.zIndex = pages.length - index;
+    });
+
+    // 翻页逻辑
+    function flipPage(index) {
+        if (index >= pages.length) return;
+        pages[index].classList.toggle('flipped');
+    }
+
+    function nextPage() {
+        if (currentPage < pages.length) {
+            pages[currentPage].classList.add('flipped');
+            currentPage++;
+            checkEnvelope();
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 0) {
+            currentPage--;
+            pages[currentPage].classList.remove('flipped');
+            checkEnvelope();
+        }
+    }
+
+    function checkEnvelope() {
+        if (currentPage === pages.length) {
+            setTimeout(() => {
+                scene.style.display = 'none';
+                envelope.style.display = 'block';
+            }, 800);
+        } else {
+            scene.style.display = 'block';
+            envelope.style.display = 'none';
+        }
+    }
+
+    function openEnvelope() {
+        envelope.classList.toggle('open');
+    }
+
+    // 鼠标拖拽旋转效果
+    let isDragging = false;
+    let startX, startY;
+    let rotationY = 0;
+    let rotationX = 0;
+
+    document.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.pageX;
+        startY = e.pageY;
+        book.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let deltaX = e.pageX - startX;
+        let deltaY = e.pageY - startY;
+        rotationY += deltaX * 0.2;
+        rotationX -= deltaY * 0.2;
+        book.style.transform = `rotateY(${rotationY}deg) rotateX(${rotationX}deg)`;
+        startX = e.pageX;
+        startY = e.pageY;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        book.style.cursor = 'grab';
+    });
+
+    // 适配移动端触屏
+    book.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].pageX;
+        startY = e.touches[0].pageY;
+    });
+    book.addEventListener('touchmove', (e) => {
+        let deltaX = e.touches[0].pageX - startX;
+        let deltaY = e.touches[0].pageY - startY;
+        rotationY += deltaX * 0.5;
+        book.style.transform = `rotateY(${rotationY}deg)`;
+        startX = e.touches[0].pageX;
+    });
+
+</script>
+</body>
+</html>
