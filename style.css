@@ -1,147 +1,254 @@
-:root {
-    --bg-color: #faf3e0;
-    --brown: #5d4037;
-    --paper: #fdf5e6;
-    --env-color: #d2b48c;
-    --flap-color: #bc8f8f;
-    --thickness: 6px;
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background: var(--bg-color);
-    height: 100vh;
-    display: flex; justify-content: center; align-items: center;
-    overflow: hidden;
-    perspective: 2500px;
+    font-family: 'Ma Shan Zheng', cursive; /* 手写字体 */
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* 温馨背景（枇杷树暖色调） */
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f8e8d8 0%, #f0d9b5 50%, #e6c890 100%);
+    z-index: -1;
+    /* 枇杷树纹理点缀 */
+    background-image: 
+        url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 25c8.3 0 15 6.7 15 15s-6.7 15-15 15-15-6.7-15-15 6.7-15 15-15zm0 50c8.3 0 15 6.7 15 15s-6.7 15-15 15-15-6.7-15-15 6.7-15 15-15z' fill='%23d8b98f' fill-opacity='0.1'/%3E%3C/svg%3E");
+}
+
+/* 日记本容器 */
+.diary-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 50px auto;
+    perspective: 1500px; /* 3D效果 */
+}
+
+/* 日记本封面 */
+.diary-cover {
+    width: 100%;
+    height: 600px;
+    background: #d4a76a;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    border: 10px solid #8b5a2b;
+}
+
+.diary-cover:hover {
+    transform: scale(1.02);
+}
+
+.diary-cover h2 {
+    font-size: 48px;
+    color: #5a3818;
+    margin-bottom: 20px;
+}
+
+.diary-cover p {
+    font-size: 24px;
+    color: #7a4b24;
+}
+
+/* 日记本内页 */
+.diary-pages {
+    width: 100%;
+    height: 600px;
+    background: #fffbf0;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 40px;
+    display: none;
+    position: relative;
+    border: 5px solid #e0c890;
+}
+
+/* 页码样式 */
+.page-number {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 18px;
+    color: #8b5a2b;
+}
+
+/* 日记内容样式 */
+.page-content {
+    width: 100%;
+    height: 80%;
+    font-size: 24px;
+    line-height: 1.8;
+    color: #333;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+/* 翻页按钮 */
+.page-btn {
+    position: absolute;
+    bottom: 20px;
+    padding: 10px 20px;
+    font-size: 20px;
     font-family: 'Ma Shan Zheng', cursive;
+    background: #d4a76a;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-.scene {
-    width: 400px; height: 550px;
-    transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
+.page-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
 }
 
-.book {
-    width: 100%; height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
+.page-btn:hover:not(:disabled) {
+    background: #b98846;
 }
 
-/* 页面厚度感与层级 */
-.page {
-    position: absolute; width: 100%; height: 100%;
-    transform-origin: left;
-    transform-style: preserve-3d;
-    transition: transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+.prev-btn {
+    left: 20px;
 }
 
-.page-front, .page-back {
-    position: absolute; width: 100%; height: 100%;
-    backface-visibility: hidden;
-    padding: 45px;
-    /* 增加边缘阴影模拟厚度 */
-    box-shadow: 
-        inset 5px 0 15px rgba(0,0,0,0.1),
-        2px 0 5px rgba(0,0,0,0.1);
-    background: var(--paper);
-    border: 1px solid rgba(0,0,0,0.05);
+.next-btn {
+    right: 20px;
 }
 
-.page-back { transform: rotateY(180deg); background: #f3e5c8; }
-.page.flipped { transform: rotateY(-180deg) translateZ(calc(var(--thickness) * -1)); }
-
-/* 书脊与封面效果 */
-.cover-front {
-    background: var(--brown) !important;
-    color: var(--paper) !important;
-    border-radius: 0 15px 15px 0;
-    justify-content: center; align-items: center; display: flex; flex-direction: column;
-}
-
-.book-spine-line {
-    position: absolute; left: 10px; top: 0; width: 2px; height: 100%;
-    background: rgba(255,255,255,0.1);
-}
-
-/* --- 信封物理构造 (对齐修复版) --- */
+/* 信封容器（初始隐藏） */
 .envelope-container {
-    position: relative; width: 100%; height: 200px;
-    margin-top: 50px;
-    transform-style: preserve-3d;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255,251,240,0.95);
+    border-radius: 8px;
 }
 
-.envelope-wrapper {
-    width: 300px; height: 180px;
-    margin: 0 auto;
-    /* 信封斜放效果 */
-    transform: rotateZ(-5deg) rotateX(5deg);
-    transform-style: preserve-3d;
-    transition: all 0.6s ease;
-}
-
-.envelope-body {
-    width: 100%; height: 100%;
-    background: var(--env-color);
+/* 信封样式 */
+.envelope {
+    width: 600px;
+    height: 400px;
     position: relative;
-    transform-style: preserve-3d;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    cursor: pointer;
 }
 
-/* 封口对齐与分层 */
-.flap {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    clip-path: polygon(0 0, 100% 0, 50% 55%);
-    background: var(--flap-color);
-    transform-origin: top;
-    transition: transform 0.8s ease;
-    z-index: 4; /* 最表层 */
-}
-
-/* 信封前层（用于遮挡信纸下半部分） */
-.envelope-front-layer {
-    position: absolute; bottom: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--env-color);
-    clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
-    z-index: 3;
-}
-
-/* 信纸初始逻辑：被完全遮挡 */
-.letter {
-    position: absolute; top: 5%; left: 5%;
-    width: 90%; height: 90%;
-    background: #fff;
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    transform: translateZ(1px); /* 在 body 内层 */
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+/* 信封正面 */
+.envelope-front {
+    width: 100%;
+    height: 100%;
+    background: #f8e8d8;
+    border: 2px solid #8b5a2b;
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    transition: transform 0.5s ease;
     z-index: 2;
-    opacity: 0.8;
 }
 
-.letter-inner { font-size: 0.95rem; line-height: 1.6; color: #333; pointer-events: none; }
-.signature { text-align: right; margin-top: 20px; }
-
-/* 交互状态 1：开盖 */
-.envelope-wrapper.step1 .flap {
-    transform: rotateX(160deg);
+.envelope-front.open {
+    transform: rotateX(180deg) translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* 交互状态 2：信纸滑出 */
-.envelope-wrapper.step2 .letter {
-    transform: translateY(-130px) translateZ(20px) rotateZ(2deg);
-    height: 300px;
-    opacity: 1;
+/* 邮票样式 */
+.stamp {
+    width: 80px;
+    height: 80px;
+    background: #e6c890;
+    border: 2px dashed #8b5a2b;
+    border-radius: 5px;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: #5a3818;
 }
 
-/* 控件样式 */
-.controls { position: fixed; bottom: 30px; display: flex; gap: 20px; }
-button {
-    padding: 12px 28px; background: var(--brown); color: #fff;
-    border: none; border-radius: 25px; cursor: pointer; font-family: inherit;
+/* 信封地址 */
+.address {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #333;
+    margin-top: 80px;
 }
-.hint { text-align: center; margin-top: 20px; color: #8d6e63; font-size: 0.9rem; }
+
+/* 打开提示 */
+.open-tip {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    color: #8b5a2b;
+}
+
+/* 信封内部（初始隐藏） */
+.envelope-inside {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border: 2px solid #8b5a2b;
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 30px;
+    display: none;
+    z-index: 1;
+}
+
+/* 信件内容 */
+.letter {
+    width: 100%;
+    height: 85%;
+    font-size: 22px;
+    line-height: 1.8;
+    color: #333;
+    overflow-y: auto;
+}
+
+/* 关闭信件按钮 */
+.close-letter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 16px;
+    font-size: 18px;
+    font-family: 'Ma Shan Zheng', cursive;
+    background: #d4a76a;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.close-letter:hover {
+    background: #b98846;
+}
