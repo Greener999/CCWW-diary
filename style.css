@@ -1,16 +1,15 @@
 :root {
-    --bg-color: #faf3e0;
+    --bg: #faf3e0;
     --brown: #5d4037;
     --paper: #fdf5e6;
-    --env-color: #d2b48c;
-    --flap-color: #bc8f8f;
-    --thickness: 6px;
+    --env: #d2b48c;
+    --flap: #bc8f8f;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    background: var(--bg-color);
+    background: var(--bg);
     height: 100vh;
     display: flex; justify-content: center; align-items: center;
     overflow: hidden;
@@ -21,16 +20,12 @@ body {
 .scene {
     width: 400px; height: 550px;
     transform-style: preserve-3d;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.5s ease-out;
 }
 
-.book {
-    width: 100%; height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-}
+.book { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
 
-/* 页面厚度感与层级 */
+/* 页面厚度感 */
 .page {
     position: absolute; width: 100%; height: 100%;
     transform-origin: left;
@@ -41,107 +36,90 @@ body {
 .page-front, .page-back {
     position: absolute; width: 100%; height: 100%;
     backface-visibility: hidden;
-    padding: 45px;
-    /* 增加边缘阴影模拟厚度 */
-    box-shadow: 
-        inset 5px 0 15px rgba(0,0,0,0.1),
-        2px 0 5px rgba(0,0,0,0.1);
+    padding: 40px;
+    box-shadow: inset 5px 0 20px rgba(0,0,0,0.05), 2px 0 5px rgba(0,0,0,0.1);
     background: var(--paper);
     border: 1px solid rgba(0,0,0,0.05);
 }
 
 .page-back { transform: rotateY(180deg); background: #f3e5c8; }
-.page.flipped { transform: rotateY(-180deg) translateZ(calc(var(--thickness) * -1)); }
 
-/* 书脊与封面效果 */
+/* 翻页后的微小位移防止重叠 */
+.page.flipped { transform: rotateY(-180deg) translateZ(1px); }
+
+/* 封面装饰 */
 .cover-front {
     background: var(--brown) !important;
     color: var(--paper) !important;
-    border-radius: 0 15px 15px 0;
-    justify-content: center; align-items: center; display: flex; flex-direction: column;
+    border-radius: 0 10px 10px 0;
+    text-align: center; justify-content: center; display: flex; flex-direction: column;
 }
 
-.book-spine-line {
-    position: absolute; left: 10px; top: 0; width: 2px; height: 100%;
+.book-spine {
+    position: absolute; left: 8px; top: 0; width: 3px; height: 100%;
     background: rgba(255,255,255,0.1);
 }
 
-/* --- 信封物理构造 (对齐修复版) --- */
-.envelope-container {
-    position: relative; width: 100%; height: 200px;
-    margin-top: 50px;
-    transform-style: preserve-3d;
+/* --- 信封系统：修复对齐与遮挡 --- */
+.envelope-area {
+    position: relative; width: 100%; height: 220px;
+    margin-top: 40px; transform-style: preserve-3d;
 }
 
 .envelope-wrapper {
-    width: 300px; height: 180px;
+    width: 280px; height: 160px;
     margin: 0 auto;
-    /* 信封斜放效果 */
-    transform: rotateZ(-5deg) rotateX(5deg);
+    transform: rotateZ(-5deg) rotateX(5deg); /* 斜放效果 */
     transform-style: preserve-3d;
-    transition: all 0.6s ease;
+    transition: 0.6s;
 }
 
 .envelope-body {
     width: 100%; height: 100%;
-    background: var(--env-color);
-    position: relative;
-    transform-style: preserve-3d;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    background: var(--env);
+    position: relative; transform-style: preserve-3d;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
-/* 封口对齐与分层 */
+/* 封口使用 clip-path 确保绝对对齐 */
 .flap {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--flap);
     clip-path: polygon(0 0, 100% 0, 50% 55%);
-    background: var(--flap-color);
     transform-origin: top;
     transition: transform 0.8s ease;
-    z-index: 4; /* 最表层 */
+    z-index: 4;
 }
 
-/* 信封前层（用于遮挡信纸下半部分） */
 .envelope-front-layer {
-    position: absolute; bottom: 0; left: 0;
-    width: 100%; height: 100%;
-    background: var(--env-color);
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
+    background: var(--env);
     clip-path: polygon(0 40%, 100% 40%, 100% 100%, 0 100%);
     z-index: 3;
 }
 
-/* 信纸初始逻辑：被完全遮挡 */
 .letter {
-    position: absolute; top: 5%; left: 5%;
-    width: 90%; height: 90%;
-    background: #fff;
-    padding: 20px;
+    position: absolute; top: 5%; left: 5%; width: 90%; height: 90%;
+    background: #fff; padding: 20px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    transform: translateZ(1px); /* 在 body 内层 */
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateZ(1px); /* 初始在内层 */
+    transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
-    opacity: 0.8;
+    opacity: 0; /* 初始完全遮挡/不可见 */
 }
 
-.letter-inner { font-size: 0.95rem; line-height: 1.6; color: #333; pointer-events: none; }
-.signature { text-align: right; margin-top: 20px; }
+/* 交互状态 */
+.envelope-wrapper.step1 .flap { transform: rotateX(165deg); }
+.envelope-wrapper.step1 .letter { opacity: 1; transform: translateZ(1px) translateY(-5px); } /* 露出边缘 */
 
-/* 交互状态 1：开盖 */
-.envelope-wrapper.step1 .flap {
-    transform: rotateX(160deg);
-}
-
-/* 交互状态 2：信纸滑出 */
 .envelope-wrapper.step2 .letter {
-    transform: translateY(-130px) translateZ(20px) rotateZ(2deg);
-    height: 300px;
-    opacity: 1;
+    transform: translateY(-140px) translateZ(15px) rotateZ(2deg);
+    height: 280px; z-index: 10;
 }
 
-/* 控件样式 */
 .controls { position: fixed; bottom: 30px; display: flex; gap: 20px; }
 button {
-    padding: 12px 28px; background: var(--brown); color: #fff;
-    border: none; border-radius: 25px; cursor: pointer; font-family: inherit;
+    padding: 10px 25px; background: var(--brown); color: white;
+    border: none; border-radius: 20px; cursor: pointer; font-family: inherit;
 }
-.hint { text-align: center; margin-top: 20px; color: #8d6e63; font-size: 0.9rem; }
+.hint { text-align: center; margin-top: 15px; color: #8d6e63; font-size: 0.85rem; }
