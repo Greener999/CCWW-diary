@@ -1,140 +1,110 @@
 :root {
     --bg-color: #faf3e0;
-    --paper: #fdf5e6;
     --brown: #5d4037;
-    --accent: #81c784;
+    --paper: #fdf5e6;
+    --loquat: #ffcc80;
 }
 
 body {
     background-color: var(--bg-color);
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0; height: 100vh;
+    display: flex; justify-content: center; align-items: center;
     overflow: hidden;
-    font-family: 'Zhi Mang Xing', cursive;
+    perspective: 2000px;
+    font-family: 'Ma+Shan+Zheng', cursive, serif;
 }
 
+/* 3D 场景与书本厚度 */
 .scene {
-    width: 350px;
-    height: 450px;
-    perspective: 1500px;
+    width: 380px; height: 500px;
+    transform-style: preserve-3d;
+    transition: transform 0.1s;
 }
 
 .book {
+    width: 100%; height: 100%;
     position: relative;
-    width: 100%;
-    height: 100%;
-    transition: transform 0.5s;
     transform-style: preserve-3d;
+}
+
+/* 书脊厚度 */
+.book::after {
+    content: "";
+    position: absolute; left: 0; top: 0;
+    width: 15px; height: 100%;
+    background: #3e2723;
+    transform: rotateY(90deg);
+    transform-origin: left;
 }
 
 .page {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    transform-origin: left;
-    transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+    position: absolute; width: 100%; height: 100%;
+    top: 0; left: 0;
+    transform-origin: left center;
     transform-style: preserve-3d;
-    z-index: 1;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.front, .back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
+.page-front, .page-back {
+    position: absolute; width: 100%; height: 100%;
     backface-visibility: hidden;
-    padding: 30px;
-    box-shadow: inset 5px 0 15px rgba(0,0,0,0.1);
-    background: var(--paper);
-    border: 1px solid #dcd0b9;
-    overflow: hidden;
+    padding: 35px;
+    box-shadow: inset 3px 0 20px rgba(0,0,0,0.1);
 }
 
-.back {
-    transform: rotateY(180deg);
-    background: #f4ead5;
-}
+.page-back { transform: rotateY(180deg); }
 
-.cover .front {
-    background: var(--brown);
-    color: var(--paper);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 0 10px 10px 0;
-}
+/* 材质风格 */
+.cover { background: #6d4c41; color: var(--paper); border-radius: 0 10px 10px 0; }
+.paper { background: var(--paper); border: 1px solid #dcd0b9; color: #4e342e; }
 
-/* 翻页状态 */
+/* 翻页动画逻辑 */
 .page.flipped {
-    transform: rotateY(-180deg);
+    transform: rotateY(-180deg) translateZ(10px) !important;
 }
 
-.content h2 { margin-bottom: 20px; color: var(--brown); }
-.content p { line-height: 1.8; font-size: 1.2rem; color: #4e342e; }
-
-/* 信封遮罩层 */
-.overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-}
-
-.envelope {
-    width: 300px;
-    height: 200px;
-    background: #d2b48c;
-    position: relative;
+/* --- 信封系统 --- */
+.envelope-wrapper {
+    position: absolute; bottom: 50px; left: 10%;
+    width: 80%; height: 200px;
     transform-style: preserve-3d;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 10;
+}
+
+.envelope-body {
+    width: 100%; height: 100%;
+    background: #d2b48c; /* 复古牛皮纸 */
+    position: relative;
+    transform-style: preserve-3d;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .flap {
-    position: absolute;
-    top: 0; width: 0; height: 0;
-    border-left: 150px solid transparent;
-    border-right: 150px solid transparent;
-    border-top: 100px solid #bc8f8f;
+    position: absolute; top: 0; width: 0; height: 0;
+    border-left: 152px solid transparent;
+    border-right: 152px solid transparent;
+    border-top: 100px solid #a1887f;
     transform-origin: top;
-    transition: 0.4s;
-    z-index: 3;
+    transition: 0.6s;
+    z-index: 5;
 }
 
 .letter {
-    position: absolute;
-    bottom: 5px; left: 10px; width: 280px; height: 180px;
-    background: #fff;
-    padding: 15px;
-    transition: 0.5s;
-    z-index: 2;
+    position: absolute; bottom: 5px; left: 5%;
+    width: 90%; height: 90%;
+    background: #fff; padding: 20px;
+    transition: 0.6s;
+    transform: translateZ(-1px);
+    z-index: 1;
 }
 
-.envelope.open .flap { transform: rotateX(180deg); z-index: 1; }
-.envelope.open .letter { transform: translateY(-130px); height: 300px; z-index: 5; }
+/* 信封打开 */
+.envelope-wrapper.open .flap { transform: rotateX(180deg); z-index: 0; }
+.envelope-wrapper.open .letter { transform: translateY(-130px) translateZ(20px); height: 320px; z-index: 10; }
 
-.nav-controls {
-    position: fixed;
-    bottom: 30px;
-    display: flex;
-    gap: 20px;
-}
-
+.controls { position: fixed; bottom: 30px; display: flex; gap: 20px; }
 button {
-    padding: 8px 18px;
-    background: var(--brown);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-family: inherit;
+    padding: 10px 25px; background: var(--brown); color: white;
+    border: none; border-radius: 20px; cursor: pointer; font-family: inherit;
 }
