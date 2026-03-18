@@ -3,15 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>枇杷树下的记忆 - 3D 物理交互版</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-</head><!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>枇杷树下的日记 - 3D 完整交互版</title>
+    <title>枇杷树下的记忆</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 </head>
@@ -21,9 +13,9 @@
             <div class="page" id="p1">
                 <div class="page-front cover-front">
                     <h1>枇杷树下的日记</h1>
-                    <div class="book-spine"></div>
+                    <div class="book-spine-decor"></div>
                     <p>—— 温暖与记忆 ——</p>
-                    <div class="guide">点击封面或下方按钮翻页</div>
+                    <div class="guide">点击封面开启时光</div>
                 </div>
                 <div class="page-back paper">
                     <div class="diary-content">
@@ -41,7 +33,7 @@
                 </div>
                 <div class="page-back paper">
                     <div class="diary-content">
-                        <p>时间总是悄无声息地溜走，唯有纸笔留下的痕迹，能证明那些温馨的瞬间真实存在过。</p>
+                        <p>时光荏苒，树长高了，我们也长大了。有些话写在纸上，有些话藏在风里。</p>
                     </div>
                 </div>
             </div>
@@ -55,76 +47,9 @@
                                 <div class="flap"></div>
                                 <div class="letter">
                                     <div class="letter-inner">
-                                        <p>亲爱的朋友：</p>
-                                        <p>见字如面。希望无论走到哪里，家永远是那棵为你遮阴的枇杷树...</p>
-                                        <p class="sig">—— 你的老朋友</p>
-                                    </div>
-                                </div>
-                                <div class="envelope-front-layer"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="hint" id="hint-text">点击封口开启信封</p>
-                </div>
-                <div class="page-back cover-back">
-                    <h2>珍藏记忆</h2>
-                    <p>—— 完 ——</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button id="prevBtn">上一页</button>
-        <button id="nextBtn">下一页</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
-<body>
-    <div class="scene" id="scene">
-        <div class="book" id="book">
-            <div class="page p-cover" id="p1">
-                <div class="page-front cover-front">
-                    <h1>枇杷树下的日记</h1>
-                    <div class="book-spine-line"></div>
-                    <p>—— 温暖与记忆 ——</p>
-                    <div class="guide">点击封面开启</div>
-                </div>
-                <div class="page-back paper-side">
-                    <div class="diary-content">
-                        <p class="date">2026年3月18日 晴</p>
-                        <p>阳光洒进窗户，枇杷树的影子投在书桌上。那些平凡的日子，如今回想起来都闪着光。</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page p-inner" id="p2">
-                <div class="page-front paper-side">
-                    <div class="diary-content">
-                        <p>记得那时候，我们总是在树下坐很久，聊着不着边际的梦想。风吹过叶子的声音，就是最美的背景音乐。</p>
-                    </div>
-                </div>
-                <div class="page-back paper-side">
-                    <div class="diary-content">
-                        <p>时间总是悄无声息地溜走，唯有纸笔留下的痕迹，能证明那些温馨的瞬间真实存在过。</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="page p-inner" id="p3">
-                <div class="page-front paper-side">
-                    <h3 class="page-title">夹在页间的信</h3>
-                    <div class="envelope-container">
-                        <div class="envelope-wrapper" id="envelope">
-                            <div class="envelope-body">
-                                <div class="flap"></div>
-                                <div class="letter">
-                                    <div class="letter-inner">
                                         <p>亲爱的 [占位符]:</p>
                                         <p>见字如面。希望无论走到哪里，家永远是那棵为你遮阴的枇杷树...</p>
-                                        <p class="signature">—— [你的名字]</p>
+                                        <p style="text-align: right; margin-top: 30px;">—— [你的名字]</p>
                                     </div>
                                 </div>
                                 <div class="envelope-front-layer"></div>
