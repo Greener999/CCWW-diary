@@ -3,72 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>枇杷树下的记忆 - 3D 物理交互版</title>
+    <title>家的日记本</title>
     <link rel="stylesheet" href="style.css">
+    <!-- 引入手写字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="scene" id="scene">
-        <div class="book" id="book">
-            <div class="page p-cover" id="p1">
-                <div class="page-front cover-front">
-                    <h1>枇杷树下的日记</h1>
-                    <div class="book-spine-line"></div>
-                    <p>—— 温暖与记忆 ——</p>
-                    <div class="guide">点击封面开启</div>
-                </div>
-                <div class="page-back paper-side">
-                    <div class="diary-content">
-                        <p class="date">2026年3月18日 晴</p>
-                        <p>阳光洒进窗户，枇杷树的影子投在书桌上。那些平凡的日子，如今回想起来都闪着光。</p>
-                    </div>
-                </div>
-            </div>
+    <!-- 背景容器 -->
+    <div class="background"></div>
 
-            <div class="page p-inner" id="p2">
-                <div class="page-front paper-side">
-                    <div class="diary-content">
-                        <p>记得那时候，我们总是在树下坐很久，聊着不着边际的梦想。风吹过叶子的声音，就是最美的背景音乐。</p>
-                    </div>
-                </div>
-                <div class="page-back paper-side">
-                    <div class="diary-content">
-                        <p>时间总是悄无声息地溜走，唯有纸笔留下的痕迹，能证明那些温馨的瞬间真实存在过。</p>
-                    </div>
-                </div>
-            </div>
+    <!-- 日记本容器 -->
+    <div class="diary-container" id="diaryContainer">
+        <!-- 日记本封面 -->
+        <div class="diary-cover" id="diaryCover">
+            <h2>家的小日记</h2>
+            <p>点击打开日记本</p>
+        </div>
 
-            <div class="page p-inner" id="p3">
-                <div class="page-front paper-side">
-                    <h3 class="page-title">夹在页间的信</h3>
-                    <div class="envelope-container">
-                        <div class="envelope-wrapper" id="envelope">
-                            <div class="envelope-body">
-                                <div class="flap"></div>
-                                <div class="letter">
-                                    <div class="letter-inner">
-                                        <p>亲爱的 [占位符]:</p>
-                                        <p>见字如面。希望无论走到哪里，家永远是那棵为你遮阴的枇杷树...</p>
-                                        <p class="signature">—— [你的名字]</p>
-                                    </div>
-                                </div>
-                                <div class="envelope-front-layer"></div>
-                            </div>
-                        </div>
+        <!-- 日记本内页（初始隐藏） -->
+        <div class="diary-pages" id="diaryPages">
+            <!-- 页码容器 -->
+            <div class="page-number">第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">0</span> 页</div>
+            
+            <!-- 日记内容容器 -->
+            <div class="page-content" id="pageContent"></div>
+
+            <!-- 翻页按钮 -->
+            <button class="page-btn prev-btn" id="prevBtn" disabled>上一页</button>
+            <button class="page-btn next-btn" id="nextBtn">下一页</button>
+
+            <!-- 信封（最后一页显示） -->
+            <div class="envelope-container" id="envelopeContainer">
+                <div class="envelope" id="envelope">
+                    <div class="envelope-front">
+                        <div class="stamp">邮票</div>
+                        <div class="address" id="envelopeAddress"></div>
+                        <p class="open-tip">点击打开信封</p>
                     </div>
-                    <p class="hint" id="hint-text">点击封口开启信封</p>
-                </div>
-                <div class="page-back cover-back">
-                    <h2>珍藏记忆</h2>
-                    <p>—— 完 ——</p>
+                    <div class="envelope-inside" id="envelopeInside">
+                        <div class="letter" id="letterContent"></div>
+                        <button class="close-letter" id="closeLetter">收起信件</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="controls">
-        <button id="prevBtn">上一页</button>
-        <button id="nextBtn">下一页</button>
     </div>
 
     <script src="script.js"></script>
