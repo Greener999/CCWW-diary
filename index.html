@@ -3,70 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>枇杷小筑 - 3D 交互日记</title>
+    <title>枇杷树下的记忆</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="scene" id="scene">
         <div class="book" id="book">
-            <div class="page" id="p1" style="transform: translateZ(3px);">
+            <div class="page" id="p1">
                 <div class="page-front cover">
                     <h1>枇杷树下的日记</h1>
                     <p>—— 温暖与记忆 ——</p>
-                    <div class="guide">点击封面开启</div>
+                    <div class="guide">点击封面或按钮开启</div>
                 </div>
                 <div class="page-back paper">
                     <div class="diary-content">
-                        <p>[此处替换：第一页背面内容。阳光透过树叶，在纸上留下斑驳的影...]</p>
+                        <p>2026年3月18日 晴</p>
+                        <p>阳光透过枇杷树叶，在桌面上洒下细碎的光影。这些年的记忆，都锁在了这本薄薄的册子里...</p>
                     </div>
                 </div>
             </div>
 
-            <div class="page" id="p2" style="transform: translateZ(2px);">
+            <div class="page" id="p2">
                 <div class="page-front paper">
                     <div class="diary-content">
-                        <h2>2026年3月18日</h2>
-                        <p>[此处替换：第二页正面内容。枇杷熟了，满院子都是清甜的味道...]</p>
+                        <p>那时候，院子里的枇杷刚熟，满枝头都是金黄色的希望。我们坐在树下，分享着酸甜的果实，也分享着对未来的憧憬。</p>
                     </div>
                 </div>
                 <div class="page-back paper">
                     <div class="diary-content">
-                        <p>[此处替换：第二页背面内容。我们总是在树下坐很久...]</p>
+                        <p>时间总是悄无声息地溜走，唯有纸笔留下的痕迹，能证明那些温馨的瞬间真实存在过。</p>
                     </div>
                 </div>
             </div>
 
-            <div class="page" id="p3" style="transform: translateZ(1px);">
+            <div class="page" id="p3">
                 <div class="page-front paper">
+                    <h3 style="margin-bottom:20px; color:#5d4037;">夹在页间的信</h3>
                     <div class="envelope-wrapper" id="envelope">
                         <div class="envelope-body">
                             <div class="flap"></div>
                             <div class="letter">
-                                <div class="letter-text">
-                                    <p>亲爱的 [占位符]:</p>
-                                    <p>[此处替换：信件正文内容。无论时空如何变幻，家永远在这里...]</p>
-                                    <p style="text-align: right;">—— [签名]</p>
+                                <div class="letter-inner">
+                                    <p>亲爱的朋友：</p>
+                                    <p>见字如面。这封信藏在岁月的缝隙里，希望能带给你一丝微光。无论你走到哪里，只要想起这棵枇杷树，家就在你的心里。</p>
+                                    <p style="text-align: right; margin-top: 30px;">—— 你的老朋友</p>
                                 </div>
                             </div>
                             <div class="stamp"></div>
-                            <div class="postmark">2026.03.18</div>
                         </div>
                     </div>
-                    <p class="hint">夹在页间的信</p>
+                    <p class="hint">点击信封开启</p>
                 </div>
-                <div class="page-back cover">
-                    <h2>完</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="controls">
-        <button id="prevBtn">上一页</button>
-        <button id="nextBtn">下一页</button>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+                <div class="
