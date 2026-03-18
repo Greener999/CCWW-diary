@@ -1,90 +1,63 @@
-// ====================== 你的日记内容 ======================
-const diaryPages = [
-  `3月1日 晴
-今天阳光很暖，风吹过窗台，像家里温柔的气息。
-想起小时候院子里的枇杷树，夏天满树金黄，甜到心里。`,
+let currentPage = 1;
+const totalPages = 3;
+let envStep = 0; // 0:关闭, 1:开盖, 2:滑出
 
-  `3月5日 多云
-家，是不管走多远，回头永远都在的地方。
-一盏灯，一碗热汤，一句问候，就足够安心。`,
+// 初始化页面物理堆叠
+function initBook() {
+    const pages = document.querySelectorAll('.page');
+    pages.forEach((page, index) => {
+        // 初始 Z 轴微小偏移产生厚度感
+        page.style.zIndex = totalPages - index;
+        page.style.transform = `translateZ(${(totalPages - index) * 1}px)`;
+    });
+}
 
-  `3月10日 暖
-愿所有温柔都被珍藏，
-愿所有想念都有回应。
-你永远是被爱着的。`
-];
+function updatePages(dir) {
+    if (dir === 'next' && currentPage < totalPages) {
+        const page = document.getElementById(`p${currentPage}`);
+        page.classList.add('flipped');
+        setTimeout(() => { page.style.zIndex = currentPage; }, 700);
+        currentPage++;
+    } else if (dir === 'prev' && currentPage > 1) {
+        currentPage--;
+        const page = document.getElementById(`p${currentPage}`);
+        page.classList.remove('flipped');
+        setTimeout(() => { page.style.zIndex = totalPages - currentPage + 1; }, 700);
+    }
+}
 
-// 信封地址
-const envelopeText = `收件人：心里的家
-寄件人：一直温暖的你`;
-
-// 信件内容
-const letterText = `亲爱的你：
-
-见字如面。
-这本日记，写的都是温柔与想念。
-家不是一个地方，而是一种感觉，
-是无论何时，都能让你安心的温暖。
-
-愿你永远被爱，永远柔软，永远明亮。
-
-—— 来自心底的信`;
-// ==========================================================
-
-const book = document.getElementById('book');
-const pagesEl = document.getElementById('pages');
-const coverFront = document.querySelector('.cover-front');
-const letterWrap = document.getElementById('letterWrap');
+// 信封三段式逻辑
 const envelope = document.getElementById('envelope');
-const letterPaper = document.getElementById('letterPaper');
-const address = document.getElementById('address');
-const letterContent = document.getElementById('letterContent');
+const hint = document.getElementById('hint-text');
 
-address.textContent = envelopeText;
-letterContent.textContent = letterText;
+envelope.onclick = (e) => {
+    e.stopPropagation();
+    if (envStep === 0) {
+        // 第一步：只开盖，看到信纸边缘
+        envelope.classList.add('step1');
+        hint.innerText = "看到信纸了，再次点击取出";
+        envStep = 1;
+    } else if (envStep === 1) {
+        // 第二步：信纸滑出到最前方
+        envelope.classList.add('step2');
+        hint.innerText = "阅读完毕，点击收回";
+        envStep = 2;
+    } else {
+        // 第三步：全部收回
+        envelope.classList.remove('step1', 'step2');
+        hint.innerText = "点击封口开启信封";
+        envStep = 0;
+    }
+};
 
-let currentPage = 0;
-let pages = [];
+document.getElementById('nextBtn').onclick = () => updatePages('next');
+document.getElementById('prevBtn').onclick = () => updatePages('prev');
 
-// 创建书页
-function createPages() {
-  diaryPages.forEach((text, i) => {
-    const page = document.createElement('div');
-    page.className = 'page';
-    page.textContent = text;
-    page.style.zIndex = diaryPages.length - i;
-    pagesEl.appendChild(page);
-    pages.push(page);
-  });
-}
-createPages();
-
-// 点击封面打开
-book.addEventListener('click', () => {
-  if (currentPage === 0) {
-    coverFront.style.transform = 'rotateY(-180deg)';
-    setTimeout(() => flipPage(), 600);
-  } else {
-    flipPage();
-  }
+// 视角随动
+document.addEventListener('mousemove', (e) => {
+    const x = (window.innerWidth / 2 - e.pageX) / 40;
+    const y = (window.innerHeight / 2 - e.pageY) / 40;
+    document.getElementById('scene').style.transform = `rotateX(${10 + y}deg) rotateY(${-5 - x}deg)`;
 });
 
-// 翻页
-function flipPage() {
-  if (currentPage >= pages.length) return;
-  pages[currentPage].classList.add('flipped');
-  currentPage++;
-
-  // 翻到最后一页 → 弹出信件
-  if (currentPage === pages.length) {
-    setTimeout(() => {
-      letterWrap.style.display = 'flex';
-    }, 700);
-  }
-}
-
-// 打开信封
-envelope.addEventListener('click', () => {
-  envelope.classList.toggle('open');
-  letterPaper.classList.toggle('show');
-});
+initBook();
