@@ -1,54 +1,31 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>家的日记本</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- 引入手写字体 -->
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>温暖日记本</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- 背景容器 -->
-    <div class="background"></div>
+<div class="book" id="book">
+  <div class="book-cover cover-front"></div>
+  <div class="pages" id="pages"></div>
+  <div class="book-cover cover-back"></div>
+</div>
 
-    <!-- 日记本容器 -->
-    <div class="diary-container" id="diaryContainer">
-        <!-- 日记本封面 -->
-        <div class="diary-cover" id="diaryCover">
-            <h2>家的小日记</h2>
-            <p>点击打开日记本</p>
-        </div>
-
-        <!-- 日记本内页（初始隐藏） -->
-        <div class="diary-pages" id="diaryPages">
-            <!-- 页码容器 -->
-            <div class="page-number">第 <span id="currentPage">1</span> 页 / 共 <span id="totalPages">0</span> 页</div>
-            
-            <!-- 日记内容容器 -->
-            <div class="page-content" id="pageContent"></div>
-
-            <!-- 翻页按钮 -->
-            <button class="page-btn prev-btn" id="prevBtn" disabled>上一页</button>
-            <button class="page-btn next-btn" id="nextBtn">下一页</button>
-
-            <!-- 信封（最后一页显示） -->
-            <div class="envelope-container" id="envelopeContainer">
-                <div class="envelope" id="envelope">
-                    <div class="envelope-front">
-                        <div class="stamp">邮票</div>
-                        <div class="address" id="envelopeAddress"></div>
-                        <p class="open-tip">点击打开信封</p>
-                    </div>
-                    <div class="envelope-inside" id="envelopeInside">
-                        <div class="letter" id="letterContent"></div>
-                        <button class="close-letter" id="closeLetter">收起信件</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="letter-wrap" id="letterWrap">
+  <div class="envelope" id="envelope">
+    <div class="envelope-flap"></div>
+    <div class="envelope-body">
+      <div class="stamp"></div>
+      <div class="address" id="address"></div>
     </div>
+    <div class="letter-paper" id="letterPaper">
+      <div class="letter-content" id="letterContent"></div>
+    </div>
+  </div>
+</div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
