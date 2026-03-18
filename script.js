@@ -1,62 +1,68 @@
 let currentPage = 1;
 const totalPages = 3;
-let envStep = 0; // 0:关闭, 1:开盖, 2:滑出
+let envStep = 0;
 
-// 初始化页面物理堆叠
+// 初始化：为每一页设置物理堆叠高度
 function initBook() {
     const pages = document.querySelectorAll('.page');
     pages.forEach((page, index) => {
-        // 初始 Z 轴微小偏移产生厚度感
         page.style.zIndex = totalPages - index;
-        page.style.transform = `translateZ(${(totalPages - index) * 1}px)`;
+        // 微小的 translateZ 产生厚度感
+        page.style.transform = `translateZ(${(totalPages - index) * 0.5}px)`;
     });
 }
 
-function updatePages(dir) {
-    if (dir === 'next' && currentPage < totalPages) {
+function updatePages(direction) {
+    if (direction === 'next' && currentPage < totalPages) {
         const page = document.getElementById(`p${currentPage}`);
         page.classList.add('flipped');
-        setTimeout(() => { page.style.zIndex = currentPage; }, 700);
+        // 翻页过程中段切换 z-index 防止穿透
+        setTimeout(() => {
+            page.style.zIndex = currentPage;
+        }, 700);
         currentPage++;
-    } else if (dir === 'prev' && currentPage > 1) {
+    } else if (direction === 'prev' && currentPage > 1) {
         currentPage--;
         const page = document.getElementById(`p${currentPage}`);
         page.classList.remove('flipped');
-        setTimeout(() => { page.style.zIndex = totalPages - currentPage + 1; }, 700);
+        setTimeout(() => {
+            page.style.zIndex = totalPages - currentPage + 1;
+        }, 700);
     }
 }
 
-// 信封三段式逻辑
+// 信封分步交互逻辑
 const envelope = document.getElementById('envelope');
 const hint = document.getElementById('hint-text');
 
 envelope.onclick = (e) => {
     e.stopPropagation();
     if (envStep === 0) {
-        // 第一步：只开盖，看到信纸边缘
         envelope.classList.add('step1');
-        hint.innerText = "看到信纸了，再次点击取出";
+        hint.innerText = "已开启，点击信纸边缘取出";
         envStep = 1;
     } else if (envStep === 1) {
-        // 第二步：信纸滑出到最前方
         envelope.classList.add('step2');
-        hint.innerText = "阅读完毕，点击收回";
+        hint.innerText = "点击信件收回";
         envStep = 2;
     } else {
-        // 第三步：全部收回
         envelope.classList.remove('step1', 'step2');
         hint.innerText = "点击封口开启信封";
         envStep = 0;
     }
 };
 
+// 按钮绑定
 document.getElementById('nextBtn').onclick = () => updatePages('next');
 document.getElementById('prevBtn').onclick = () => updatePages('prev');
 
+// 封面点击快捷翻页
+document.getElementById('p1').onclick = () => { if(currentPage === 1) updatePages('next'); };
+
 // 视角随动
 document.addEventListener('mousemove', (e) => {
-    const x = (window.innerWidth / 2 - e.pageX) / 40;
-    const y = (window.innerHeight / 2 - e.pageY) / 40;
+    const x = (window.innerWidth / 2 - e.pageX) / 45;
+    const y = (window.innerHeight / 2 - e.pageY) / 45;
     document.getElementById('scene').style.transform = `rotateX(${10 + y}deg) rotateY(${-5 - x}deg)`;
 });
 
