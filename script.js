@@ -1,22 +1,23 @@
 let currentPage = 1;
 const totalPages = 3;
-let envStep = 0;
+let envStep = 0; // 0:关闭, 1:开盖, 2:弹信
 
-// 初始化：为每一页设置物理堆叠高度
+// 1. 初始化书本厚度感
 function initBook() {
     const pages = document.querySelectorAll('.page');
     pages.forEach((page, index) => {
         page.style.zIndex = totalPages - index;
-        // 微小的 translateZ 产生厚度感
-        page.style.transform = `translateZ(${(totalPages - index) * 0.5}px)`;
+        // 赋予物理堆叠微移
+        page.style.transform = `translateZ(${(totalPages - index) * 0.8}px)`;
     });
 }
 
+// 2. 翻页逻辑（带层级保护）
 function updatePages(direction) {
     if (direction === 'next' && currentPage < totalPages) {
         const page = document.getElementById(`p${currentPage}`);
         page.classList.add('flipped');
-        // 翻页过程中段切换 z-index 防止穿透
+        // 关键：翻转至中途切换 z-index
         setTimeout(() => {
             page.style.zIndex = currentPage;
         }, 700);
@@ -31,19 +32,19 @@ function updatePages(direction) {
     }
 }
 
-// 信封分步交互逻辑
+// 3. 信封三阶段状态机
 const envelope = document.getElementById('envelope');
 const hint = document.getElementById('hint-text');
 
 envelope.onclick = (e) => {
-    e.stopPropagation();
+    e.stopPropagation(); // 阻止触发翻页
     if (envStep === 0) {
         envelope.classList.add('step1');
-        hint.innerText = "已开启，点击信纸边缘取出";
+        hint.innerText = "已开启，再次点击信纸边缘取出";
         envStep = 1;
     } else if (envStep === 1) {
         envelope.classList.add('step2');
-        hint.innerText = "点击信件收回";
+        hint.innerText = "点击信纸收回信封";
         envStep = 2;
     } else {
         envelope.classList.remove('step1', 'step2');
@@ -52,14 +53,12 @@ envelope.onclick = (e) => {
     }
 };
 
-// 按钮绑定
+// 4. 事件绑定
 document.getElementById('nextBtn').onclick = () => updatePages('next');
 document.getElementById('prevBtn').onclick = () => updatePages('prev');
-
-// 封面点击快捷翻页
 document.getElementById('p1').onclick = () => { if(currentPage === 1) updatePages('next'); };
 
-// 视角随动
+// 5. 视角随动
 document.addEventListener('mousemove', (e) => {
     const x = (window.innerWidth / 2 - e.pageX) / 45;
     const y = (window.innerHeight / 2 - e.pageY) / 45;
